@@ -11,7 +11,7 @@ from django.views import generic
 from django.db.models import F
 #def index(request):
 #    return HttpResponse("Hello Welcome to Python Server")
-class indexView(generic.ListView):
+class IndexView(generic.ListView):
     template_name="polls/index.html"
     context_object_name="latest_questions_list"
     def get_queryset(self):
