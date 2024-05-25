@@ -7,27 +7,25 @@ from django.urls import reverse
 from .models import Question
 
 from django.template import loader
-
+from django.views import generic
 from django.db.models import F
 #def index(request):
 #    return HttpResponse("Hello Welcome to Python Server")
-def index(request):
-    latest_questions_list=Question.objects.order_by("pub_date")[:5]
-    template=loader.get_template(".polls/index.html")
-    context={
-        "latest_question_list":latest_questions_list
-    }
-    #output=",".join([q.question_text for q in latest_questions_list])
-    return HttpResponse(template.render(context,request))
+class indexView(generic.ListView):
+    template_name="polls/index.html"
+    context_object_name="latest_questions_list"
+    def get_queryset(self):
+        return Question.objects.order_by("pub_date")[:5]
+    
+    
+class DetailView(generic.DetailView):
+    model=Question
+    template_name="polls/detail.html"
 
-def detail(request,question_id):
-    question=get_object_or_404(Question,pk=question_id)
-    return render(request,'polls/detail.html',{"question":question})
-    #return HttpResponse("You're looking at question %s"%question_id)
+class ResultsView(generic.DetailView):
+    model=Question
+    template_name="poll/results.html"
 
-def results(request,question_id):
-    question=get_object_or_404(Question,pk=question_id)
-    return render(request,"polls/results.html",{"question":question})
 
 def vote(request,question_id):
     question=get_object_or_404(Question,pk=question_id)
