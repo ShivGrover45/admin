@@ -5,7 +5,7 @@ from django.http import Http404
 from django.http import HttpResponse,HttpResponseRedirect
 from django.urls import reverse
 from .models import Question
-
+from django.utils import timezone 
 from django.template import loader
 from django.views import generic
 from django.db.models import F
@@ -15,7 +15,9 @@ class IndexView(generic.ListView):
     template_name="polls/index.html"
     context_object_name="latest_questions_list"
     def get_queryset(self):
-        return Question.objects.order_by("pub_date")[:5]
+        #return Question.objects.order_by("pub_date")[:5]
+        return Question.objects.filter(pub_date_lte=timezone.now()).order_by("pub_date")[:5]
+    
     
     
 class DetailView(generic.DetailView):
