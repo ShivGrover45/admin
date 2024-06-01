@@ -41,9 +41,35 @@ class QuestionIndexViewTests(TestCase):
             response.context["latest_question_text"],[question]
         )
     def test_future_question(self):  
-        create_question(question_text="Future Question",days=30)
+        create_question(question_text="Future Question.",days=30)
         response=self.client.get(reverse("polls:index"))
         self.assertQuerySetEqual(
             response.context["latest_question_text"],[]
         )
-    def test_future_and_past_question    
+    def test_future_and_past_question(self):
+        question=create_question(question_text="Past Question.",days=-30)
+        create_question(question_text="Future Question.",days=30)
+        response=self.client.get(reverse("polls:index"))
+        self.assertQuerySetEqual(
+            ["latest_question_list"],[question],
+                                 )
+    def test_two_past_question(self):
+        question1=create_question(question_text="Past Question 1.",days=-30)
+        question2=create_question(create_question="Past Question 2.",days=-5)
+        response=self.client.get(reverse("polls:index"))
+        self.assertQuerySetEqual(
+            ["latest_question_list"],[question1,question2]
+        )
+class QuestionDetailViewTests(TestCase):
+    def test_future_question(self):
+        future_question=create_question(question_text="Future Question.",days=5)
+        url=reverse("polls:detail",args=(future_question.id))
+        response=self.client.get(url)
+        self.assertEqual(response.status_code,404)
+
+    def test_past_question(self):
+        past_question=create_question(question_text="Past Question.",days=-5)
+        url=reverse("polls:detail",args=(past_question.id))
+        response=self.client.get(url)
+        self.assertContains(response,past_question.question_text)
+
